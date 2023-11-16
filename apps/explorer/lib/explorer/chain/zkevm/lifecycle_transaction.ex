@@ -8,13 +8,8 @@ defmodule Explorer.Chain.Zkevm.LifecycleTransaction do
 
   @required_attrs ~w(id hash is_verify)a
 
-  @type t :: %__MODULE__{
-          hash: Hash.t(),
-          is_verify: boolean()
-        }
-
   @primary_key {:id, :integer, autogenerate: false}
-  schema "zkevm_lifecycle_l1_transactions" do
+  typed_schema "zkevm_lifecycle_l1_transactions" do
     field(:hash, Hash.Full)
     field(:is_verify, :boolean)
 

@@ -3,7 +3,7 @@ defmodule Explorer.Chain.InternalTransaction do
 
   use Explorer.Schema
 
-  alias Explorer.Chain.{Address, Block, Data, Gas, Hash, PendingBlockOperation, Transaction, Wei}
+  alias Explorer.Chain.{Address, Block, Data, Hash, PendingBlockOperation, Transaction, Wei}
   alias Explorer.Chain.InternalTransaction.{Action, CallType, Result, Type}
 
   @typedoc """
@@ -32,35 +32,8 @@ defmodule Explorer.Chain.InternalTransaction do
    * `block_index` - the index of this internal transaction inside the `block`
    * `pending_block` - `nil` if `block` has all its internal transactions fetched
   """
-  @type t :: %__MODULE__{
-          block_number: Explorer.Chain.Block.block_number() | nil,
-          type: Type.t(),
-          call_type: CallType.t() | nil,
-          created_contract_address: %Ecto.Association.NotLoaded{} | Address.t() | nil,
-          created_contract_address_hash: Hash.t() | nil,
-          created_contract_code: Data.t() | nil,
-          error: String.t(),
-          from_address: %Ecto.Association.NotLoaded{} | Address.t(),
-          from_address_hash: Hash.Address.t(),
-          gas: Gas.t() | nil,
-          gas_used: Gas.t() | nil,
-          index: non_neg_integer(),
-          init: Data.t() | nil,
-          input: Data.t() | nil,
-          output: Data.t() | nil,
-          to_address: %Ecto.Association.NotLoaded{} | Address.t() | nil,
-          to_address_hash: Hash.Address.t() | nil,
-          trace_address: [non_neg_integer()],
-          transaction: %Ecto.Association.NotLoaded{} | Transaction.t(),
-          transaction_hash: Hash.t(),
-          transaction_index: Transaction.transaction_index() | nil,
-          value: Wei.t(),
-          block_hash: Hash.Full.t(),
-          block_index: non_neg_integer()
-        }
-
   @primary_key false
-  schema "internal_transactions" do
+  typed_schema "internal_transactions" do
     field(:call_type, CallType)
     field(:created_contract_code, Data)
     field(:error, :string)

@@ -10,8 +10,8 @@ defmodule Explorer.Account.Identity do
   alias Explorer.Account.Api.Plan
   alias Explorer.Account.{TagAddress, Watchlist}
 
-  schema "account_identities" do
-    field(:uid_hash, Cloak.Ecto.SHA256)
+  typed_schema "account_identities" do
+    field(:uid_hash, Cloak.Ecto.SHA256) :: binary() | nil
     field(:uid, Explorer.Encrypted.Binary)
     field(:email, Explorer.Encrypted.Binary)
     field(:name, Explorer.Encrypted.Binary)

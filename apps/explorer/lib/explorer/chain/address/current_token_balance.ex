@@ -13,7 +13,7 @@ defmodule Explorer.Chain.Address.CurrentTokenBalance do
   import Explorer.Chain.SmartContract, only: [burn_address_hash_string: 0]
 
   alias Explorer.{Chain, PagingOptions, Repo}
-  alias Explorer.Chain.{Address, Block, Hash, Token}
+  alias Explorer.Chain.{Address, Hash, Token}
 
   @default_paging_options %PagingOptions{page_size: 50}
 
@@ -27,24 +27,7 @@ defmodule Explorer.Chain.Address.CurrentTokenBalance do
    *  `token_id` - The token_id of the transferred token (applicable for ERC-1155)
    *  `token_type` - The type of the token
   """
-  @type t :: %__MODULE__{
-          address: %Ecto.Association.NotLoaded{} | Address.t(),
-          address_hash: Hash.Address.t(),
-          token: %Ecto.Association.NotLoaded{} | Token.t(),
-          token_contract_address_hash: Hash.Address,
-          block_number: Block.block_number(),
-          max_block_number: Block.block_number(),
-          inserted_at: DateTime.t(),
-          updated_at: DateTime.t(),
-          value: Decimal.t() | nil,
-          token_id: non_neg_integer() | nil,
-          token_type: String.t(),
-          distinct_token_instances_count: non_neg_integer(),
-          token_ids: list(Decimal.t()),
-          preloaded_token_instances: list()
-        }
-
-  schema "address_current_token_balances" do
+  typed_schema "address_current_token_balances" do
     field(:value, :decimal)
     field(:block_number, :integer)
     field(:max_block_number, :integer, virtual: true)

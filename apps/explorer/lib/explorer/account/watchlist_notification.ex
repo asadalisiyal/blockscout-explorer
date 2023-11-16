@@ -12,7 +12,7 @@ defmodule Explorer.Account.WatchlistNotification do
   alias Explorer.Repo
   alias Explorer.Account.{Watchlist, WatchlistAddress}
 
-  schema "account_watchlist_notifications" do
+  typed_schema "account_watchlist_notifications" do
     field(:amount, :decimal)
     field(:block_number, :integer)
     field(:direction, :string)
@@ -22,7 +22,7 @@ defmodule Explorer.Account.WatchlistNotification do
     field(:viewed_at, :integer)
     field(:name, Explorer.Encrypted.Binary)
     field(:subject, Explorer.Encrypted.Binary)
-    field(:subject_hash, Cloak.Ecto.SHA256)
+    field(:subject_hash, Cloak.Ecto.SHA256) :: binary() | nil
 
     belongs_to(:watchlist_address, WatchlistAddress)
     belongs_to(:watchlist, Watchlist)
@@ -31,9 +31,9 @@ defmodule Explorer.Account.WatchlistNotification do
     field(:to_address_hash, Explorer.Encrypted.AddressHash)
     field(:transaction_hash, Explorer.Encrypted.TransactionHash)
 
-    field(:from_address_hash_hash, Cloak.Ecto.SHA256)
-    field(:to_address_hash_hash, Cloak.Ecto.SHA256)
-    field(:transaction_hash_hash, Cloak.Ecto.SHA256)
+    field(:from_address_hash_hash, Cloak.Ecto.SHA256) :: binary() | nil
+    field(:to_address_hash_hash, Cloak.Ecto.SHA256) :: binary() | nil
+    field(:transaction_hash_hash, Cloak.Ecto.SHA256) :: binary() | nil
 
     timestamps()
   end

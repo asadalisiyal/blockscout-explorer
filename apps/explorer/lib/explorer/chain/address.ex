@@ -13,7 +13,6 @@ defmodule Explorer.Chain.Address do
 
   alias Explorer.Chain.{
     Address,
-    Block,
     Data,
     DecompiledSmartContract,
     Hash,
@@ -35,38 +34,6 @@ defmodule Explorer.Chain.Address do
   Hash of the public key for this address.
   """
   @type hash :: Hash.t()
-
-  @typedoc """
-   * `fetched_coin_balance` - The last fetched balance from Nethermind
-   * `fetched_coin_balance_block_number` - the `t:Explorer.Chain.Block.t/0` `t:Explorer.Chain.Block.block_number/0` for
-     which `fetched_coin_balance` was fetched
-   * `hash` - the hash of the address's public key
-   * `contract_code` - the binary code of the contract when an Address is a contract.  The human-readable
-     Solidity source code is in `smart_contract` `t:Explorer.Chain.SmartContract.t/0` `contract_source_code` *if* the
-    contract has been verified
-   * `names` - names known for the address
-   * `inserted_at` - when this address was inserted
-   * `updated_at` - when this address was last updated
-   * `ens_domain_name` - virtual field for ENS domain name passing
-
-   `fetched_coin_balance` and `fetched_coin_balance_block_number` may be updated when a new coin_balance row is fetched.
-    They may also be updated when the balance is fetched via the on demand fetcher.
-  """
-  @type t :: %__MODULE__{
-          fetched_coin_balance: Wei.t(),
-          fetched_coin_balance_block_number: Block.block_number(),
-          hash: Hash.Address.t(),
-          contract_code: Data.t() | nil,
-          names: %Ecto.Association.NotLoaded{} | [Address.Name.t()],
-          contracts_creation_transaction: %Ecto.Association.NotLoaded{} | Transaction.t(),
-          inserted_at: DateTime.t(),
-          updated_at: DateTime.t(),
-          nonce: non_neg_integer() | nil,
-          transactions_count: non_neg_integer() | nil,
-          token_transfers_count: non_neg_integer() | nil,
-          gas_used: non_neg_integer() | nil,
-          ens_domain_name: String.t() | nil
-        }
 
   @derive {Poison.Encoder,
            except: [
@@ -90,8 +57,24 @@ defmodule Explorer.Chain.Address do
              :names
            ]}
 
+  @typedoc """
+   * `fetched_coin_balance` - The last fetched balance from Nethermind
+   * `fetched_coin_balance_block_number` - the `t:Explorer.Chain.Block.t/0` `t:Explorer.Chain.Block.block_number/0` for
+     which `fetched_coin_balance` was fetched
+   * `hash` - the hash of the address's public key
+   * `contract_code` - the binary code of the contract when an Address is a contract.  The human-readable
+     Solidity source code is in `smart_contract` `t:Explorer.Chain.SmartContract.t/0` `contract_source_code` *if* the
+    contract has been verified
+   * `names` - names known for the address
+   * `inserted_at` - when this address was inserted
+   * `updated_at` - when this address was last updated
+   * `ens_domain_name` - virtual field for ENS domain name passing
+
+   `fetched_coin_balance` and `fetched_coin_balance_block_number` may be updated when a new coin_balance row is fetched.
+    They may also be updated when the balance is fetched via the on demand fetcher.
+  """
   @primary_key {:hash, Hash.Address, autogenerate: false}
-  schema "addresses" do
+  typed_schema "addresses" do
     field(:fetched_coin_balance, Wei)
     field(:fetched_coin_balance_block_number, :integer)
     field(:contract_code, Data)

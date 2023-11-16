@@ -21,17 +21,8 @@ defmodule Explorer.Chain.Address.CoinBalanceDaily do
    * `updated_at` - When the balance was last updated.
    * `value` - the max balance (`value`) of `address` during the `day`.
   """
-  @type t :: %__MODULE__{
-          address: %Ecto.Association.NotLoaded{} | Address.t(),
-          address_hash: Hash.Address.t(),
-          day: Date.t(),
-          inserted_at: DateTime.t(),
-          updated_at: DateTime.t(),
-          value: Wei.t() | nil
-        }
-
   @primary_key false
-  schema "address_coin_balances_daily" do
+  typed_schema "address_coin_balances_daily" do
     field(:day, :date)
     field(:value, Wei)
 

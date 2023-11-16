@@ -9,7 +9,7 @@ defmodule Explorer.Chain.DecompiledSmartContract do
 
   @derive {Jason.Encoder, only: [:address_hash, :decompiler_version, :decompiled_source_code]}
 
-  schema "decompiled_smart_contracts" do
+  typed_schema "decompiled_smart_contracts" do
     field(:decompiler_version, :string)
     field(:decompiled_source_code, :string)
 

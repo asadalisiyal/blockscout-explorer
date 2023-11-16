@@ -13,7 +13,7 @@ defmodule Explorer.Account.Api.Key do
   @max_key_per_account 3
 
   @primary_key false
-  schema "account_api_keys" do
+  typed_schema "account_api_keys" do
     field(:name, :string)
     field(:value, UUID, primary_key: true)
     belongs_to(:identity, Identity)

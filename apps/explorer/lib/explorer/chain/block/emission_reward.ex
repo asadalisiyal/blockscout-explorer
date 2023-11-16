@@ -5,7 +5,7 @@ defmodule Explorer.Chain.Block.EmissionReward do
 
   use Explorer.Schema
 
-  alias Explorer.Chain.Block.{EmissionReward, Range}
+  alias Explorer.Chain.Block.Range
   alias Explorer.Chain.Wei
 
   @typedoc """
@@ -14,13 +14,8 @@ defmodule Explorer.Chain.Block.EmissionReward do
   * `:block_range` - Range of block numbers
   * `:reward` - Reward given in Wei
   """
-  @type t :: %EmissionReward{
-          block_range: Range.t(),
-          reward: Wei.t()
-        }
-
   @primary_key false
-  schema "emission_rewards" do
+  typed_schema "emission_rewards" do
     field(:block_range, Range)
     field(:reward, Wei)
   end

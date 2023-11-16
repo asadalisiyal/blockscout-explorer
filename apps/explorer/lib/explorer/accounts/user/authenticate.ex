@@ -7,7 +7,7 @@ defmodule Explorer.Accounts.User.Authenticate do
 
   import Ecto.Changeset
 
-  embedded_schema do
+  typed_embedded_schema do
     field(:username, :string)
     field(:password, :string)
   end

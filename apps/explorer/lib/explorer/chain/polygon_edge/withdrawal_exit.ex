@@ -3,7 +3,7 @@ defmodule Explorer.Chain.PolygonEdge.WithdrawalExit do
 
   use Explorer.Schema
 
-  alias Explorer.Chain.{Block, Hash}
+  alias Explorer.Chain.Hash
 
   @required_attrs ~w(msg_id l1_transaction_hash l1_block_number success)a
 
@@ -13,15 +13,8 @@ defmodule Explorer.Chain.PolygonEdge.WithdrawalExit do
   * `l1_block_number` - block number of the L1 transaction
   * `success` - a status of onL2StateReceive internal call (namely internal withdrawal transaction)
   """
-  @type t :: %__MODULE__{
-          msg_id: non_neg_integer(),
-          l1_transaction_hash: Hash.t(),
-          l1_block_number: Block.block_number(),
-          success: boolean()
-        }
-
   @primary_key false
-  schema "polygon_edge_withdrawal_exits" do
+  typed_schema "polygon_edge_withdrawal_exits" do
     field(:msg_id, :integer, primary_key: true)
     field(:l1_transaction_hash, Hash.Full)
     field(:l1_block_number, :integer)

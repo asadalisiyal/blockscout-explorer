@@ -6,7 +6,7 @@ defmodule Explorer.Chain.Token.Instance do
   use Explorer.Schema
 
   alias Explorer.{Chain, Helper}
-  alias Explorer.Chain.{Address, Block, Hash, Token, TokenTransfer}
+  alias Explorer.Chain.{Address, Hash, Token, TokenTransfer}
   alias Explorer.Chain.Address.CurrentTokenBalance
   alias Explorer.Chain.Token.Instance
   alias Explorer.PagingOptions
@@ -17,21 +17,8 @@ defmodule Explorer.Chain.Token.Instance do
   * `metadata` - Token instance metadata
   * `error` - error fetching token instance
   """
-
-  @type t :: %Instance{
-          token_id: non_neg_integer(),
-          token_contract_address_hash: Hash.Address.t(),
-          metadata: map() | nil,
-          error: String.t(),
-          owner_address_hash: Hash.Address.t(),
-          owner_updated_at_block: Block.block_number(),
-          owner_updated_at_log_index: non_neg_integer(),
-          current_token_balance: any(),
-          is_unique: bool() | nil
-        }
-
   @primary_key false
-  schema "token_instances" do
+  typed_schema "token_instances" do
     field(:token_id, :decimal, primary_key: true)
     field(:metadata, :map)
     field(:error, :string)

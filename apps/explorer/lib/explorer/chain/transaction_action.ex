@@ -18,16 +18,8 @@ defmodule Explorer.Chain.TransactionAction do
   * `type` - type of the action protocol (see possible values for Enum of the db table field)
   * `log_index` - index of the action for sorting (taken from log.index)
   """
-  @type t :: %__MODULE__{
-          hash: Hash.t(),
-          protocol: String.t(),
-          data: map(),
-          type: String.t(),
-          log_index: non_neg_integer()
-        }
-
   @primary_key false
-  schema "transaction_actions" do
+  typed_schema "transaction_actions" do
     field(:protocol, Ecto.Enum, values: @supported_protocols)
     field(:data, :map)
 

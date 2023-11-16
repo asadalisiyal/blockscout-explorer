@@ -35,40 +35,6 @@ defmodule Explorer.Chain.Token do
     asc: :contract_address_hash
   ]
 
-  @typedoc """
-  * `name` - Name of the token
-  * `symbol` - Trading symbol of the token
-  * `total_supply` - The total supply of the token
-  * `decimals` - Number of decimal places the token can be subdivided to
-  * `type` - Type of token
-  * `cataloged` - Flag for if token information has been cataloged
-  * `contract_address` - The `t:Address.t/0` of the token's contract
-  * `contract_address_hash` - Address hash foreign key
-  * `holder_count` - the number of `t:Explorer.Chain.Address.t/0` (except the burn address) that have a
-    `t:Explorer.Chain.CurrentTokenBalance.t/0` `value > 0`.  Can be `nil` when data not migrated.
-  * `fiat_value` - The price of a token in a configured currency (USD by default).
-  * `circulating_market_cap` - The circulating market cap of a token in a configured currency (USD by default).
-  * `icon_url` - URL of the token's icon.
-  * `is_verified_via_admin_panel` - is token verified via admin panel.
-  """
-  @type t :: %Token{
-          name: String.t(),
-          symbol: String.t(),
-          total_supply: Decimal.t() | nil,
-          decimals: non_neg_integer(),
-          type: String.t(),
-          cataloged: boolean(),
-          contract_address: %Ecto.Association.NotLoaded{} | Address.t(),
-          contract_address_hash: Hash.Address.t(),
-          holder_count: non_neg_integer() | nil,
-          skip_metadata: boolean(),
-          total_supply_updated_at_block: non_neg_integer() | nil,
-          fiat_value: Decimal.t() | nil,
-          circulating_market_cap: Decimal.t() | nil,
-          icon_url: String.t(),
-          is_verified_via_admin_panel: boolean()
-        }
-
   @derive {Poison.Encoder,
            except: [
              :__meta__,
@@ -85,8 +51,24 @@ defmodule Explorer.Chain.Token do
              :updated_at
            ]}
 
+  @typedoc """
+  * `name` - Name of the token
+  * `symbol` - Trading symbol of the token
+  * `total_supply` - The total supply of the token
+  * `decimals` - Number of decimal places the token can be subdivided to
+  * `type` - Type of token
+  * `cataloged` - Flag for if token information has been cataloged
+  * `contract_address` - The `t:Address.t/0` of the token's contract
+  * `contract_address_hash` - Address hash foreign key
+  * `holder_count` - the number of `t:Explorer.Chain.Address.t/0` (except the burn address) that have a
+    `t:Explorer.Chain.CurrentTokenBalance.t/0` `value > 0`.  Can be `nil` when data not migrated.
+  * `fiat_value` - The price of a token in a configured currency (USD by default).
+  * `circulating_market_cap` - The circulating market cap of a token in a configured currency (USD by default).
+  * `icon_url` - URL of the token's icon.
+  * `is_verified_via_admin_panel` - is token verified via admin panel.
+  """
   @primary_key false
-  schema "tokens" do
+  typed_schema "tokens" do
     field(:name, :string)
     field(:symbol, :string)
     field(:total_supply, :decimal)

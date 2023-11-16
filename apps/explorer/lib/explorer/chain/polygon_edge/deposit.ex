@@ -3,10 +3,7 @@ defmodule Explorer.Chain.PolygonEdge.Deposit do
 
   use Explorer.Schema
 
-  alias Explorer.Chain.{
-    Block,
-    Hash
-  }
+  alias Explorer.Chain.Hash
 
   @optional_attrs ~w(from to l1_transaction_hash l1_timestamp)a
 
@@ -22,17 +19,8 @@ defmodule Explorer.Chain.PolygonEdge.Deposit do
   * `l1_timestamp` - timestamp of the L1 transaction block
   * `l1_block_number` - block number of the L1 transaction
   """
-  @type t :: %__MODULE__{
-          msg_id: non_neg_integer(),
-          from: Hash.Address.t() | nil,
-          to: Hash.Address.t() | nil,
-          l1_transaction_hash: Hash.t() | nil,
-          l1_timestamp: DateTime.t() | nil,
-          l1_block_number: Block.block_number()
-        }
-
   @primary_key false
-  schema "polygon_edge_deposits" do
+  typed_schema "polygon_edge_deposits" do
     field(:msg_id, :integer, primary_key: true)
     field(:from, Hash.Address)
     field(:to, Hash.Address)

@@ -10,22 +10,8 @@ defmodule Explorer.Chain.Zkevm.TransactionBatch do
 
   @required_attrs ~w(number timestamp l2_transactions_count global_exit_root acc_input_hash state_root)a
 
-  @type t :: %__MODULE__{
-          number: non_neg_integer(),
-          timestamp: DateTime.t(),
-          l2_transactions_count: non_neg_integer(),
-          global_exit_root: Hash.t(),
-          acc_input_hash: Hash.t(),
-          state_root: Hash.t(),
-          sequence_id: non_neg_integer() | nil,
-          sequence_transaction: %Ecto.Association.NotLoaded{} | LifecycleTransaction.t() | nil,
-          verify_id: non_neg_integer() | nil,
-          verify_transaction: %Ecto.Association.NotLoaded{} | LifecycleTransaction.t() | nil,
-          l2_transactions: %Ecto.Association.NotLoaded{} | [BatchTransaction.t()]
-        }
-
   @primary_key {:number, :integer, autogenerate: false}
-  schema "zkevm_transaction_batches" do
+  typed_schema "zkevm_transaction_batches" do
     field(:timestamp, :utc_datetime_usec)
     field(:l2_transactions_count, :integer)
     field(:global_exit_root, Hash.Full)

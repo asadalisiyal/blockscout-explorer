@@ -9,7 +9,7 @@ defmodule Explorer.Application.Constants do
   @keys_manager_contract_address_key "keys_manager_contract_address"
 
   @primary_key false
-  schema "constants" do
+  typed_schema "constants" do
     field(:key, :string, primary_key: true)
     field(:value, :string)
 

@@ -20,6 +20,24 @@ defmodule Explorer.Chain.Block.SecondDegreeRelation do
   @required_fields ~w(nephew_hash uncle_hash index)a
   @allowed_fields @optional_fields ++ @required_fields
 
+  # @type t ::
+  #         %__MODULE__{
+  #           nephew: %Ecto.Association.NotLoaded{} | Block.t(),
+  #           nephew_hash: Hash.Full.t(),
+  #           uncle: %Ecto.Association.NotLoaded{} | Block.t() | nil,
+  #           uncle_fetched_at: nil,
+  #           uncle_hash: Hash.Full.t(),
+  #           index: non_neg_integer() | nil
+  #         }
+  #         | %__MODULE__{
+  #             nephew: %Ecto.Association.NotLoaded{} | Block.t(),
+  #             nephew_hash: Hash.Full.t(),
+  #             uncle: %Ecto.Association.NotLoaded{} | Block.t(),
+  #             uncle_fetched_at: DateTime.t(),
+  #             uncle_hash: Hash.Full.t(),
+  #             index: non_neg_integer() | nil
+  #           }
+
   @typedoc """
    * `nephew` - `t:Explorer.Chain.Block.t/0` that included `hash` as an uncle.
    * `nephew_hash` - foreign key for `nephew_block`.
@@ -29,26 +47,8 @@ defmodule Explorer.Chain.Block.SecondDegreeRelation do
    * `uncle_hash` - foreign key for `uncle`.
    * `index` - index of the uncle within its nephew. Can be `nil` for blocks fetched before this field was added.
   """
-  @type t ::
-          %__MODULE__{
-            nephew: %Ecto.Association.NotLoaded{} | Block.t(),
-            nephew_hash: Hash.Full.t(),
-            uncle: %Ecto.Association.NotLoaded{} | Block.t() | nil,
-            uncle_fetched_at: nil,
-            uncle_hash: Hash.Full.t(),
-            index: non_neg_integer() | nil
-          }
-          | %__MODULE__{
-              nephew: %Ecto.Association.NotLoaded{} | Block.t(),
-              nephew_hash: Hash.Full.t(),
-              uncle: %Ecto.Association.NotLoaded{} | Block.t(),
-              uncle_fetched_at: DateTime.t(),
-              uncle_hash: Hash.Full.t(),
-              index: non_neg_integer() | nil
-            }
-
   @primary_key false
-  schema "block_second_degree_relations" do
+  typed_schema "block_second_degree_relations" do
     field(:uncle_fetched_at, :utc_datetime_usec)
     field(:index, :integer)
 

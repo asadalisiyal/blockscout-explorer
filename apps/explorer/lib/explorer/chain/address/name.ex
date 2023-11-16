@@ -18,16 +18,8 @@ defmodule Explorer.Chain.Address.Name do
   * `name` - name for the address
   * `primary` - flag for if the name is the primary name for the address
   """
-  @type t :: %__MODULE__{
-          address: %Ecto.Association.NotLoaded{} | Address.t(),
-          address_hash: Hash.Address.t(),
-          name: String.t(),
-          primary: boolean(),
-          metadata: map()
-        }
-
   @primary_key {:id, :integer, autogenerate: false}
-  schema "address_names" do
+  typed_schema "address_names" do
     field(:name, :string)
     field(:primary, :boolean)
     field(:metadata, :map)

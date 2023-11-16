@@ -14,7 +14,7 @@ defmodule Explorer.Chain.Address.TokenBalance do
   alias Explorer.Chain
   alias Explorer.Chain.Address.TokenBalance
   alias Explorer.Chain.Cache.BackgroundMigrations
-  alias Explorer.Chain.{Address, Block, Hash, Token}
+  alias Explorer.Chain.{Address, Hash, Token}
 
   @typedoc """
    *  `address` - The `t:Explorer.Chain.Address.t/0` that is the balance's owner.
@@ -26,20 +26,7 @@ defmodule Explorer.Chain.Address.TokenBalance do
    *  `token_id` - The token_id of the transferred token (applicable for ERC-1155 and ERC-721 tokens)
    *  `token_type` - The type of the token
   """
-  @type t :: %__MODULE__{
-          address: %Ecto.Association.NotLoaded{} | Address.t(),
-          address_hash: Hash.Address.t(),
-          token: %Ecto.Association.NotLoaded{} | Token.t(),
-          token_contract_address_hash: Hash.Address,
-          block_number: Block.block_number(),
-          inserted_at: DateTime.t(),
-          updated_at: DateTime.t(),
-          value: Decimal.t() | nil,
-          token_id: non_neg_integer() | nil,
-          token_type: String.t()
-        }
-
-  schema "address_token_balances" do
+  typed_schema "address_token_balances" do
     field(:value, :decimal)
     field(:block_number, :integer)
     field(:value_fetched_at, :utc_datetime_usec)

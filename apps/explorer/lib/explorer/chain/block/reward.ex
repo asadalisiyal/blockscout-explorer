@@ -43,17 +43,8 @@ defmodule Explorer.Chain.Block.Reward do
   * `:block_hash` - Hash of the validated block
   * `:reward` - Total block reward
   """
-  @type t :: %__MODULE__{
-          address: %Ecto.Association.NotLoaded{} | Address.t() | nil,
-          address_hash: Hash.Address.t(),
-          address_type: AddressType.t(),
-          block: %Ecto.Association.NotLoaded{} | Block.t() | nil,
-          block_hash: Hash.Full.t(),
-          reward: Wei.t()
-        }
-
   @primary_key false
-  schema "block_rewards" do
+  typed_schema "block_rewards" do
     field(:address_type, AddressType)
     field(:reward, Wei)
 

@@ -10,7 +10,7 @@ defmodule Explorer.Account.Watchlist do
   alias Explorer.Account.{Identity, WatchlistAddress}
 
   @derive {Jason.Encoder, only: [:name, :watchlist_addresses]}
-  schema "account_watchlists" do
+  typed_schema "account_watchlists" do
     field(:name, :string)
     belongs_to(:identity, Identity)
     has_many(:watchlist_addresses, WatchlistAddress)

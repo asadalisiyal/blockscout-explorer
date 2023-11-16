@@ -17,12 +17,7 @@ defmodule Explorer.Tags.AddressToTag do
   * `:tag_id` - id of Tag
   * `:address_hash` - hash of Address
   """
-  @type t :: %AddressToTag{
-          tag_id: Decimal.t(),
-          address_hash: Hash.Address.t()
-        }
-
-  schema "address_to_tags" do
+  typed_schema "address_to_tags" do
     belongs_to(
       :tag,
       AddressTag,

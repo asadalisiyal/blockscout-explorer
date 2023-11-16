@@ -246,33 +246,7 @@ defmodule Explorer.Chain.SmartContract do
   * `is_yul` - field was added for storing user's choice
   * `verified_via_eth_bytecode_db` - whether contract automatically verified via eth-bytecode-db or not.
   """
-
-  @type t :: %SmartContract{
-          name: String.t(),
-          compiler_version: String.t(),
-          optimization: boolean,
-          contract_source_code: String.t(),
-          constructor_arguments: String.t() | nil,
-          evm_version: String.t() | nil,
-          optimization_runs: non_neg_integer() | nil,
-          abi: [function_description],
-          verified_via_sourcify: boolean | nil,
-          partially_verified: boolean | nil,
-          file_path: String.t(),
-          is_vyper_contract: boolean | nil,
-          is_changed_bytecode: boolean,
-          bytecode_checked_at: DateTime.t(),
-          contract_code_md5: String.t(),
-          implementation_name: String.t() | nil,
-          compiler_settings: map() | nil,
-          implementation_fetched_at: DateTime.t(),
-          implementation_address_hash: Hash.Address.t(),
-          autodetect_constructor_args: boolean | nil,
-          is_yul: boolean | nil,
-          verified_via_eth_bytecode_db: boolean | nil
-        }
-
-  schema "smart_contracts" do
+  typed_schema "smart_contracts" do
     field(:name, :string)
     field(:compiler_version, :string)
     field(:optimization, :boolean)

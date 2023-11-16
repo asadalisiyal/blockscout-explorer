@@ -17,14 +17,7 @@ defmodule Explorer.Chain.SmartContractAdditionalSource do
   * `contract_source_code` - the Solidity source code from the file with `file_name`.
   * `address_hash` - foreign key for `smart_contract`.
   """
-
-  @type t :: %Explorer.Chain.SmartContractAdditionalSource{
-          file_name: String.t(),
-          contract_source_code: String.t(),
-          address_hash: Hash.Address.t()
-        }
-
-  schema "smart_contracts_additional_sources" do
+  typed_schema "smart_contracts_additional_sources" do
     field(:file_name, :string)
     field(:contract_source_code, :string)
 

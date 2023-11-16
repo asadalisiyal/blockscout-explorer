@@ -8,20 +8,10 @@ defmodule Explorer.Chain.Withdrawal do
   alias Explorer.Chain.{Address, Block, Hash, Wei}
   alias Explorer.PagingOptions
 
-  @type t :: %__MODULE__{
-          index: non_neg_integer(),
-          validator_index: non_neg_integer(),
-          amount: Wei.t(),
-          block: %Ecto.Association.NotLoaded{} | Block.t(),
-          block_hash: Hash.Full.t(),
-          address: %Ecto.Association.NotLoaded{} | Address.t(),
-          address_hash: Hash.Address.t()
-        }
-
   @required_attrs ~w(index validator_index amount address_hash block_hash)a
 
   @primary_key {:index, :integer, autogenerate: false}
-  schema "withdrawals" do
+  typed_schema "withdrawals" do
     field(:validator_index, :integer)
     field(:amount, Wei)
 

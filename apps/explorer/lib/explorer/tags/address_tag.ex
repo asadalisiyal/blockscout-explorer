@@ -20,11 +20,7 @@ defmodule Explorer.Tags.AddressTag do
   * `:label` - Tag's label
   * `:display_name` - Label's display name
   """
-  @type t :: %AddressTag{
-          label: String.t()
-        }
-
-  schema "address_tags" do
+  typed_schema "address_tags" do
     field(:label, :string)
     field(:display_name, :string)
     has_many(:tag_id, AddressToTag, foreign_key: :id)
