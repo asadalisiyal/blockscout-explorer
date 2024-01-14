@@ -18,6 +18,8 @@
 
 ### Chore
 
+- [#9153](https://github.com/blockscout/blockscout/pull/9153) - Enhanced unfetched token balances index
+
 <details>
   <summary>Dependencies version bumps</summary>
 
