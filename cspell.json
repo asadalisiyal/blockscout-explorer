@@ -542,7 +542,8 @@
         "zindex",
         "zipcode",
         "zkbob",
-        "zkevm"
+        "zkevm",
+        "sushiswap"
     ],
     "enableFiletypes": [
         "dotenv",
