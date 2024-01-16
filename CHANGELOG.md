@@ -4,14 +4,15 @@
 
 ### Features
 
+- [#9158](https://github.com/blockscout/blockscout/pull/9158) - Increase shared memory for PostgreSQL containers
 - [#9155](https://github.com/blockscout/blockscout/pull/9155) - Allow bypassing avg block time in proxy implementation re-fetch ttl calculation
 - [#9131](https://github.com/blockscout/blockscout/pull/9131) - Merge addresses stage with address referencing
 - [#9072](https://github.com/blockscout/blockscout/pull/9072) - Add tracing by block logic for geth
 - [#9056](https://github.com/blockscout/blockscout/pull/9056) - Noves.fi API proxy
-- [#9158](https://github.com/blockscout/blockscout/pull/9158) - Increase shared memory for PostgreSQL containers
 
 ### Fixes
 
+- [#9173](https://github.com/blockscout/blockscout/pull/9173) - Exclude genesis block from average block time calculation
 - [#9125](https://github.com/blockscout/blockscout/pull/9125) - Fix Explorer.Chain.Cache.GasPriceOracle.merge_fees
 - [#9110](https://github.com/blockscout/blockscout/pull/9110) - Improve update_in in gas tracker
 - [#9109](https://github.com/blockscout/blockscout/pull/9109) - Return current exchange rate in api/v2/stats
