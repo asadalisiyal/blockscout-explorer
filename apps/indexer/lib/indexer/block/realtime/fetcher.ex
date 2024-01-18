@@ -33,7 +33,7 @@ defmodule Indexer.Block.Realtime.Fetcher do
   alias Explorer.Utility.MissingRangesManipulator
   alias Indexer.{Block, Tracer}
   alias Indexer.Block.Realtime.TaskSupervisor
-  alias Indexer.Fetcher.{CoinBalance, CoinBalanceDailyUpdater, OptimismWithdrawal}
+  alias Indexer.Fetcher.{CoinBalance, CoinBalanceDailyUpdater, OptimismTxnBatch, OptimismWithdrawal}
   alias Indexer.Fetcher.PolygonEdge.{DepositExecute, Withdrawal}
   alias Indexer.Prometheus
   alias Indexer.Transform.Addresses
@@ -286,6 +286,9 @@ defmodule Indexer.Block.Realtime.Fetcher do
     Indexer.Logger.metadata(
       fn ->
         if reorg? do
+          # we need to remove all rows from `op_transaction_batches` table previously written starting from reorg block number
+          OptimismTxnBatch.handle_l2_reorg(block_number_to_fetch)
+
           # we need to remove all rows from `op_withdrawals` table previously written starting from reorg block number
           OptimismWithdrawal.remove(block_number_to_fetch)
 
