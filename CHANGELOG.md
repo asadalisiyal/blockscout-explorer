@@ -14,6 +14,7 @@
 
 ### Fixes
 
+- [#9234](https://github.com/blockscout/blockscout/pull/9234) - Add missing filters by non-pending transactions
 - [#9229](https://github.com/blockscout/blockscout/pull/9229) - Add missing filter to txlist query
 - [#9139](https://github.com/blockscout/blockscout/pull/9139) - TokenBalanceOnDemand fixes
 - [#9125](https://github.com/blockscout/blockscout/pull/9125) - Fix Explorer.Chain.Cache.GasPriceOracle.merge_fees
