@@ -643,22 +643,31 @@ defmodule Explorer.ChainTest do
 
   describe "fee/2" do
     test "without receipt with :wei unit" do
-      assert Chain.fee(%Transaction{gas: Decimal.new(3), gas_price: %Wei{value: Decimal.new(2)}, gas_used: nil}, :wei) ==
+      assert Transaction.fee(
+               %Transaction{gas: Decimal.new(3), gas_price: %Wei{value: Decimal.new(2)}, gas_used: nil},
+               :wei
+             ) ==
                {:maximum, Decimal.new(6)}
     end
 
     test "without receipt with :gwei unit" do
-      assert Chain.fee(%Transaction{gas: Decimal.new(3), gas_price: %Wei{value: Decimal.new(2)}, gas_used: nil}, :gwei) ==
+      assert Transaction.fee(
+               %Transaction{gas: Decimal.new(3), gas_price: %Wei{value: Decimal.new(2)}, gas_used: nil},
+               :gwei
+             ) ==
                {:maximum, Decimal.new("6e-9")}
     end
 
     test "without receipt with :ether unit" do
-      assert Chain.fee(%Transaction{gas: Decimal.new(3), gas_price: %Wei{value: Decimal.new(2)}, gas_used: nil}, :ether) ==
+      assert Transaction.fee(
+               %Transaction{gas: Decimal.new(3), gas_price: %Wei{value: Decimal.new(2)}, gas_used: nil},
+               :ether
+             ) ==
                {:maximum, Decimal.new("6e-18")}
     end
 
     test "with receipt with :wei unit" do
-      assert Chain.fee(
+      assert Transaction.fee(
                %Transaction{
                  gas: Decimal.new(3),
                  gas_price: %Wei{value: Decimal.new(2)},
@@ -669,7 +678,7 @@ defmodule Explorer.ChainTest do
     end
 
     test "with receipt with :gwei unit" do
-      assert Chain.fee(
+      assert Transaction.fee(
                %Transaction{
                  gas: Decimal.new(3),
                  gas_price: %Wei{value: Decimal.new(2)},
@@ -680,7 +689,7 @@ defmodule Explorer.ChainTest do
     end
 
     test "with receipt with :ether unit" do
-      assert Chain.fee(
+      assert Transaction.fee(
                %Transaction{
                  gas: Decimal.new(3),
                  gas_price: %Wei{value: Decimal.new(2)},
@@ -3111,39 +3120,6 @@ defmodule Explorer.ChainTest do
       {:ok, address} = Chain.find_decompiled_contract_address(address.hash)
 
       assert Enum.count(address.decompiled_smart_contracts) == 2
-    end
-  end
-
-  describe "block_reward/1" do
-    setup do
-      %{block_range: range} = emission_reward = insert(:emission_reward)
-
-      block = insert(:block, number: Enum.random(Range.new(range.from, range.to)))
-      insert(:transaction)
-
-      {:ok, block: block, emission_reward: emission_reward}
-    end
-
-    test "with block containing transactions", %{block: block, emission_reward: emission_reward} do
-      :transaction
-      |> insert(gas_price: 1)
-      |> with_block(block, gas_used: 1)
-
-      :transaction
-      |> insert(gas_price: 1)
-      |> with_block(block, gas_used: 2)
-
-      expected =
-        emission_reward.reward
-        |> Wei.to(:wei)
-        |> Decimal.add(Decimal.new(3))
-        |> Wei.from(:wei)
-
-      assert expected == Chain.block_reward(block.number)
-    end
-
-    test "with block without transactions", %{block: block, emission_reward: emission_reward} do
-      assert emission_reward.reward == Chain.block_reward(block.number)
     end
   end
 

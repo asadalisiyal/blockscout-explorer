@@ -118,7 +118,6 @@ defmodule Explorer.Application do
         configure(Explorer.Counters.BlockBurntFeeCounter),
         configure(Explorer.Counters.BlockPriorityFeeCounter),
         configure(Explorer.Counters.AverageBlockTime),
-        configure(Explorer.Counters.Bridge),
         configure(Explorer.Validator.MetadataProcessor),
         configure(Explorer.Tags.AddressTag.Cataloger),
         configure(MinMissingBlockNumber),
@@ -129,7 +128,8 @@ defmodule Explorer.Application do
         configure(Explorer.Chain.Cache.RootstockLockedBTC),
         configure(Explorer.Migrator.TransactionsDenormalization),
         configure(Explorer.Migrator.AddressCurrentTokenBalanceTokenType),
-        configure(Explorer.Migrator.AddressTokenBalanceTokenType)
+        configure(Explorer.Migrator.AddressTokenBalanceTokenType),
+        configure(Explorer.Migrator.SanitizeMissingBlockRanges)
       ]
       |> List.flatten()
 
@@ -139,11 +139,13 @@ defmodule Explorer.Application do
   defp repos_by_chain_type do
     if Mix.env() == :test do
       [
+        Explorer.Repo.Beacon,
         Explorer.Repo.PolygonEdge,
         Explorer.Repo.PolygonZkevm,
         Explorer.Repo.RSK,
         Explorer.Repo.Shibarium,
-        Explorer.Repo.Suave
+        Explorer.Repo.Suave,
+        Explorer.Repo.BridgedTokens
       ]
     else
       []

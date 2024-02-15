@@ -66,8 +66,6 @@ defmodule Explorer.Chain do
     Withdrawal
   }
 
-  alias Explorer.Chain.Block.{EmissionReward, Reward}
-
   alias Explorer.Chain.Cache.{
     BlockNumber,
     Blocks,
@@ -476,56 +474,6 @@ defmodule Explorer.Chain do
   end
 
   @doc """
-  Reward for mining a block.
-
-  The block reward is the sum of the following:
-
-  * Sum of the transaction fees (gas_used * gas_price) for the block
-  * A static reward for miner (this value may change during the life of the chain)
-  * The reward for uncle blocks (1/32 * static_reward * number_of_uncles)
-
-  *NOTE*
-
-  Uncles are not currently accounted for.
-  """
-  @spec block_reward(Block.block_number()) :: Wei.t()
-  def block_reward(block_number) do
-    block_hash =
-      Block
-      |> where([block], block.number == ^block_number and block.consensus == true)
-      |> select([block], block.hash)
-      |> Repo.one!()
-
-    case Repo.one!(
-           from(reward in Reward,
-             where: reward.block_hash == ^block_hash,
-             select: %Wei{
-               value: coalesce(sum(reward.reward), 0)
-             }
-           )
-         ) do
-      %Wei{
-        value: %Decimal{coef: 0}
-      } ->
-        Repo.one!(
-          from(block in Block,
-            left_join: transaction in assoc(block, :transactions),
-            inner_join: emission_reward in EmissionReward,
-            on: fragment("? <@ ?", block.number, emission_reward.block_range),
-            where: block.number == ^block_number and block.consensus == true,
-            group_by: [emission_reward.reward, block.hash],
-            select: %Wei{
-              value: coalesce(sum(transaction.gas_used * transaction.gas_price), 0) + emission_reward.reward
-            }
-          )
-        )
-
-      other_value ->
-        other_value
-    end
-  end
-
-  @doc """
   The `t:Explorer.Chain.Wei.t/0` paid to the miners of the `t:Explorer.Chain.Block.t/0`s with `hash`
   `Explorer.Chain.Hash.Full.t/0` by the signers of the transactions in those blocks to cover the gas fee
   (`gas_used * gas_price`).
@@ -879,58 +827,6 @@ defmodule Explorer.Chain do
   end
 
   @doc """
-  The fee a `transaction` paid for the `t:Explorer.Transaction.t/0` `gas`
-
-  If the transaction is pending, then the fee will be a range of `unit`
-
-      iex> Explorer.Chain.fee(
-      ...>   %Explorer.Chain.Transaction{
-      ...>     gas: Decimal.new(3),
-      ...>     gas_price: %Explorer.Chain.Wei{value: Decimal.new(2)},
-      ...>     gas_used: nil
-      ...>   },
-      ...>   :wei
-      ...> )
-      {:maximum, Decimal.new(6)}
-
-  If the transaction has been confirmed in block, then the fee will be the actual fee paid in `unit` for the `gas_used`
-  in the `transaction`.
-
-      iex> Explorer.Chain.fee(
-      ...>   %Explorer.Chain.Transaction{
-      ...>     gas: Decimal.new(3),
-      ...>     gas_price: %Explorer.Chain.Wei{value: Decimal.new(2)},
-      ...>     gas_used: Decimal.new(2)
-      ...>   },
-      ...>   :wei
-      ...> )
-      {:actual, Decimal.new(4)}
-
-  """
-  @spec fee(Transaction.t(), :ether | :gwei | :wei) :: {:maximum, Decimal.t()} | {:actual, Decimal.t() | nil}
-  def fee(%Transaction{gas: _gas, gas_price: nil, gas_used: nil}, _unit), do: {:maximum, nil}
-
-  def fee(%Transaction{gas: gas, gas_price: gas_price, gas_used: nil}, unit) do
-    fee =
-      gas_price
-      |> Wei.to(unit)
-      |> Decimal.mult(gas)
-
-    {:maximum, fee}
-  end
-
-  def fee(%Transaction{gas_price: nil, gas_used: _gas_used}, _unit), do: {:actual, nil}
-
-  def fee(%Transaction{gas_price: gas_price, gas_used: gas_used}, unit) do
-    fee =
-      gas_price
-      |> Wei.to(unit)
-      |> Decimal.mult(gas_used)
-
-    {:actual, fee}
-  end
-
-  @doc """
   Checks to see if the chain is down indexing based on the transaction from the
   oldest block and the pending operation
   """
@@ -1193,11 +1089,13 @@ defmodule Explorer.Chain do
   @doc """
   Converts list of `t:Explorer.Chain.Address.t/0` `hash` to the `t:Explorer.Chain.Address.t/0` with that `hash`.
 
-  Returns `[%Explorer.Chain.Address{}]}` if found
+  Returns `[%Explorer.Chain.Address{}]` if found
 
   """
-  @spec hashes_to_addresses([Hash.Address.t()]) :: [Address.t()]
-  def hashes_to_addresses(hashes) when is_list(hashes) do
+  @spec hashes_to_addresses([Hash.Address.t()], [necessity_by_association_option | api?]) :: [Address.t()]
+  def hashes_to_addresses(hashes, options \\ []) when is_list(hashes) do
+    necessity_by_association = Keyword.get(options, :necessity_by_association, %{})
+
     query =
       from(
         address in Address,
@@ -1206,7 +1104,9 @@ defmodule Explorer.Chain do
         order_by: fragment("array_position(?, ?)", type(^hashes, {:array, Hash.Address}), address.hash)
       )
 
-    Repo.all(query)
+    query
+    |> join_associations(necessity_by_association)
+    |> select_repo(options).all()
   end
 
   @doc """
@@ -3818,8 +3718,12 @@ defmodule Explorer.Chain do
   """
   @spec update_token(Token.t(), map()) :: {:ok, Token.t()} | {:error, Ecto.Changeset.t()}
   def update_token(%Token{contract_address_hash: address_hash} = token, params \\ %{}) do
-    token_changeset = Token.changeset(token, Map.put(params, :updated_at, DateTime.utc_now()))
-    address_name_changeset = Address.Name.changeset(%Address.Name{}, Map.put(params, :address_hash, address_hash))
+    filtered_params = for({key, value} <- params, value !== "" && !is_nil(value), do: {key, value}) |> Enum.into(%{})
+
+    token_changeset = Token.changeset(token, Map.put(filtered_params, :updated_at, DateTime.utc_now()))
+
+    address_name_changeset =
+      Address.Name.changeset(%Address.Name{}, Map.put(filtered_params, :address_hash, address_hash))
 
     stale_error_field = :contract_address_hash
     stale_error_message = "is up to date"
@@ -3885,7 +3789,11 @@ defmodule Explorer.Chain do
     |> select_repo(options).all()
   end
 
-  @spec erc721_or_erc1155_token_instance_from_token_id_and_token_address(non_neg_integer(), Hash.Address.t(), [api?]) ::
+  @spec erc721_or_erc1155_token_instance_from_token_id_and_token_address(
+          Decimal.t() | non_neg_integer(),
+          Hash.Address.t(),
+          [api?]
+        ) ::
           {:ok, Instance.t()} | {:error, :not_found}
   def erc721_or_erc1155_token_instance_from_token_id_and_token_address(token_id, token_contract_address, options \\ []) do
     query = Instance.token_instance_query(token_id, token_contract_address)
@@ -4180,6 +4088,10 @@ defmodule Explorer.Chain do
     |> Enum.map(&put_owner_to_token_instance(&1, token, options))
   end
 
+  @doc """
+    Put owner address to unique token instance. If not unique, return original instance.
+  """
+  @spec put_owner_to_token_instance(Instance.t(), Token.t(), [api?]) :: Instance.t()
   def put_owner_to_token_instance(token_instance, token, options \\ [])
 
   def put_owner_to_token_instance(%Instance{is_unique: nil} = token_instance, token, options) do
@@ -4946,6 +4858,11 @@ defmodule Explorer.Chain do
             as: :created_token
           )
         )
+
+      :blob_transaction ->
+        dynamic
+        |> filter_blob_transaction_dynamic()
+        |> apply_filter_by_tx_type_to_transactions_inner(remain, query)
     end
   end
 
@@ -4977,6 +4894,11 @@ defmodule Explorer.Chain do
 
   def filter_token_creation_dynamic(dynamic) do
     dynamic([tx, created_token: created_token], ^dynamic or not is_nil(created_token))
+  end
+
+  def filter_blob_transaction_dynamic(dynamic) do
+    # EIP-2718 blob transaction type
+    dynamic([tx], ^dynamic or tx.type == 3)
   end
 
   def count_verified_contracts do

@@ -44,11 +44,13 @@ config :explorer, Explorer.Repo.Account,
   log: false
 
 for repo <- [
+      Explorer.Repo.Beacon,
       Explorer.Repo.PolygonEdge,
       Explorer.Repo.PolygonZkevm,
       Explorer.Repo.RSK,
       Explorer.Repo.Shibarium,
-      Explorer.Repo.Suave
+      Explorer.Repo.Suave,
+      Explorer.Repo.BridgedTokens
     ] do
   config :explorer, repo,
     database: "explorer_test",
@@ -58,8 +60,18 @@ for repo <- [
     ownership_timeout: :timer.minutes(1),
     timeout: :timer.seconds(60),
     queue_target: 1000,
-    log: false
+    log: false,
+    pool_size: 1
 end
+
+config :explorer, Explorer.Repo.PolygonZkevm,
+  database: "explorer_test",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  # Default of `5_000` was too low for `BlockFetcher` test
+  ownership_timeout: :timer.minutes(1),
+  timeout: :timer.seconds(60),
+  queue_target: 1000
 
 config :logger, :explorer,
   level: :warn,

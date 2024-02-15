@@ -13,11 +13,12 @@ defmodule BlockScoutWeb.ApiRouter do
   Router for API
   """
   use BlockScoutWeb, :router
-  alias BlockScoutWeb.{AddressTransactionController, APIKeyV2Router, SmartContractsApiV2Router}
+  alias BlockScoutWeb.{AddressTransactionController, APIKeyV2Router, SmartContractsApiV2Router, UtilsApiV2Router}
   alias BlockScoutWeb.Plug.{CheckAccountAPI, CheckApiV2, RateLimit}
 
   forward("/v2/smart-contracts", SmartContractsApiV2Router)
   forward("/v2/key", APIKeyV2Router)
+  forward("/v2/utils", UtilsApiV2Router)
 
   pipeline :api do
     plug(BlockScoutWeb.Plug.Logger, application: :api)
@@ -203,7 +204,7 @@ defmodule BlockScoutWeb.ApiRouter do
       get("/watchlist", V2.TransactionController, :watchlist_transactions)
 
       if System.get_env("CHAIN_TYPE") == "polygon_zkevm" do
-        get("/zkevm-batch/:batch_number", V2.TransactionController, :zkevm_batch)
+        get("/zkevm-batch/:batch_number", V2.TransactionController, :polygon_zkevm_batch)
       end
 
       if System.get_env("CHAIN_TYPE") == "suave" do
@@ -217,6 +218,10 @@ defmodule BlockScoutWeb.ApiRouter do
       get("/:transaction_hash_param/raw-trace", V2.TransactionController, :raw_trace)
       get("/:transaction_hash_param/state-changes", V2.TransactionController, :state_changes)
       get("/:transaction_hash_param/summary", V2.TransactionController, :summary)
+
+      if System.get_env("CHAIN_TYPE") == "ethereum" do
+        get("/:transaction_hash_param/blobs", V2.TransactionController, :blobs)
+      end
     end
 
     scope "/blocks" do
@@ -246,6 +251,10 @@ defmodule BlockScoutWeb.ApiRouter do
     end
 
     scope "/tokens" do
+      if Application.compile_env(:explorer, Explorer.Chain.BridgedToken)[:enabled] do
+        get("/bridged", V2.TokenController, :bridged_tokens_list)
+      end
+
       get("/", V2.TokenController, :tokens_list)
       get("/:address_hash_param", V2.TokenController, :token)
       get("/:address_hash_param/counters", V2.TokenController, :counters)
@@ -265,8 +274,8 @@ defmodule BlockScoutWeb.ApiRouter do
       get("/indexing-status", V2.MainPageController, :indexing_status)
 
       if System.get_env("CHAIN_TYPE") == "polygon_zkevm" do
-        get("/zkevm/batches/confirmed", V2.ZkevmController, :batches_confirmed)
-        get("/zkevm/batches/latest-number", V2.ZkevmController, :batch_latest_number)
+        get("/zkevm/batches/confirmed", V2.PolygonZkevmController, :batches_confirmed)
+        get("/zkevm/batches/latest-number", V2.PolygonZkevmController, :batch_latest_number)
       end
     end
 
@@ -304,9 +313,13 @@ defmodule BlockScoutWeb.ApiRouter do
 
     scope "/zkevm" do
       if System.get_env("CHAIN_TYPE") == "polygon_zkevm" do
-        get("/batches", V2.ZkevmController, :batches)
-        get("/batches/count", V2.ZkevmController, :batches_count)
-        get("/batches/:batch_number", V2.ZkevmController, :batch)
+        get("/batches", V2.PolygonZkevmController, :batches)
+        get("/batches/count", V2.PolygonZkevmController, :batches_count)
+        get("/batches/:batch_number", V2.PolygonZkevmController, :batch)
+        get("/deposits", V2.PolygonZkevmController, :deposits)
+        get("/deposits/count", V2.PolygonZkevmController, :deposits_count)
+        get("/withdrawals", V2.PolygonZkevmController, :withdrawals)
+        get("/withdrawals/count", V2.PolygonZkevmController, :withdrawals_count)
       end
     end
 
@@ -315,6 +328,7 @@ defmodule BlockScoutWeb.ApiRouter do
         get("/transactions/:transaction_hash_param", V2.Proxy.NovesFiController, :transaction)
         get("/transactions/:transaction_hash_param/describe", V2.Proxy.NovesFiController, :describe_transaction)
         get("/addresses/:address_hash_param/transactions", V2.Proxy.NovesFiController, :address_transactions)
+        get("/transactions", V2.Proxy.NovesFiController, :describe_transactions)
       end
 
       scope "/account-abstraction" do
@@ -329,6 +343,12 @@ defmodule BlockScoutWeb.ApiRouter do
         get("/accounts", V2.Proxy.AccountAbstractionController, :accounts)
         get("/bundles", V2.Proxy.AccountAbstractionController, :bundles)
         get("/operations", V2.Proxy.AccountAbstractionController, :operations)
+      end
+    end
+
+    scope "/blobs" do
+      if System.get_env("CHAIN_TYPE") == "ethereum" do
+        get("/:blob_hash_param", V2.BlobController, :blob)
       end
     end
   end

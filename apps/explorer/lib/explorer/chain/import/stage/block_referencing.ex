@@ -26,13 +26,19 @@ defmodule Explorer.Chain.Import.Stage.BlockReferencing do
   ]
 
   @polygon_zkevm_runners [
-    Runner.Zkevm.LifecycleTransactions,
-    Runner.Zkevm.TransactionBatches,
-    Runner.Zkevm.BatchTransactions
+    Runner.PolygonZkevm.LifecycleTransactions,
+    Runner.PolygonZkevm.TransactionBatches,
+    Runner.PolygonZkevm.BatchTransactions,
+    Runner.PolygonZkevm.BridgeL1Tokens,
+    Runner.PolygonZkevm.BridgeOperations
   ]
 
   @shibarium_runners [
     Runner.Shibarium.BridgeOperations
+  ]
+
+  @ethereum_runners [
+    Runner.Beacon.BlobTransactions
   ]
 
   @impl Stage
@@ -46,6 +52,9 @@ defmodule Explorer.Chain.Import.Stage.BlockReferencing do
 
       "shibarium" ->
         @default_runners ++ @shibarium_runners
+
+      "ethereum" ->
+        @default_runners ++ @ethereum_runners
 
       _ ->
         @default_runners
