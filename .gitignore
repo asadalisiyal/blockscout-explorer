@@ -25,7 +25,7 @@ npm-debug.log
 # Since we are building assets from assets/,
 # we ignore priv/static. You may want to comment
 # this depending on your deployment strategy.
-/apps/*/priv/static/
+# /apps/*/priv/static/
 
 # Files matching config/*.secret.exs pattern contain sensitive
 # data and you should not commit them into version control.
@@ -33,7 +33,7 @@ npm-debug.log
 # Alternatively, you may comment the line below and commit the
 # secrets files as long as you replace their contents by environment
 # variables.
-/apps/*/config/*.secret.exs
+# /apps/*/config/*.secret.exs
 
 # Wallaby screenshots
 screenshots/
@@ -61,7 +61,7 @@ dump.rdb
 
 **.dec**
 
-*.env
-*.env.example
-*.env.local
-*.env.staging
+# *.env
+# *.env.example
+# *.env.local
+# *.env.staging
