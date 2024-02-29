@@ -38,10 +38,10 @@ services:
     links:
       - db:database
     environment:
-        ETHEREUM_JSONRPC_HTTP_URL: https://rpc.oslocrypto.com
-        ETHEREUM_JSONRPC_TRACE_URL: https://rpc.oslocrypto.com
-        ETHEREUM_JSONRPC_WS_URL: wss://websocket.oslocrypto.com
-        CHAIN_ID: '1998'
+        ETHEREUM_JSONRPC_HTTP_URL: https://mainnet-validator.storage.chain
+        ETHEREUM_JSONRPC_TRACE_URL: https://mainnet-validator.storage.chain
+        ETHEREUM_JSONRPC_WS_URL: wss://ws-storscan-mainnet.invo.zone
+        CHAIN_ID: '8726'
 
   visualizer:
     extends:
