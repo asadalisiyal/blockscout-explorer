@@ -38,9 +38,9 @@ services:
     links:
       - db:database
     environment:
-        ETHEREUM_JSONRPC_HTTP_URL: https://mainnet-validator.storage.chain
-        ETHEREUM_JSONRPC_TRACE_URL: https://mainnet-validator.storage.chain
-        ETHEREUM_JSONRPC_WS_URL: wss://ws-storscan-mainnet.invo.zone
+        ETHEREUM_JSONRPC_HTTP_URL: https://mainnet-validator.storagechain.io
+        ETHEREUM_JSONRPC_TRACE_URL: https://mainnet-validator.storagechain.io
+        ETHEREUM_JSONRPC_WS_URL: wss://mainnet.storagechain.io
         CHAIN_ID: '8726'
 
   visualizer:
